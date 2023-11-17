@@ -1,0 +1,25 @@
+name: New word!
+
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  create_pull_request:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Create Word
+        if: ${{ startsWith(github.ref, 'refs/heads/') }}
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GHA_PERSONAL_TOKEN }}
+          branch: ${{ github.ref }}
+          title: Automatically created word
+          body: Someone typed a word!
+          base: words
+          draft: false
