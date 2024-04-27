@@ -23,6 +23,9 @@ jobs:
           ref: feature/add-ansible-basic-config
           token: ${{ secrets.CONFIG_PRIVATE_REPO_TOKEN }}
 
+      - name: Create .ssh Directory
+        run: mkdir -p ~/.ssh # Ensure the .ssh directory exists
+
       - name: Add Host to Known Hosts
         run: |
           ssh-keyscan -H ${{ secrets.HOSTNAME }} >> ~/.ssh/known_hosts  # Add host key to known_hosts
