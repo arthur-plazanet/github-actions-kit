@@ -35,4 +35,4 @@ jobs:
           sudo pip3 install ansible
 
       - name: Run Ansible Playbook
-        run: ansible-playbook -i config/ansible/inventories/hosts config/ansible/roles/monitoring/server_metrics.yml
+        run: ansible-playbook -i config/ansible/inventories/hosts ansible/roles/monitoring/server_metrics.yml
