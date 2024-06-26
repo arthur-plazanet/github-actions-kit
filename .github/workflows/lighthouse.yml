@@ -1,4 +1,3 @@
-# https://github.com/jakejarvis/lighthouse-action
 name: Audit LightHouse
 on:
   workflow_dispatch:

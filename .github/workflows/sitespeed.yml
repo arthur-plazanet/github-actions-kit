@@ -1,0 +1,16 @@
+name: Run Sitespeed.io
+on:
+  workflow_dispatch:
+    inputs:
+      app_name:
+        description: 'Name of the application'
+        required: true
+
+jobs:
+  run-sitespeed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v2
+      - name: running sitespeed.io container with arguments and optional Docker options
+        run: docker run -v "$(pwd):/sitespeed.io" sitespeedio/sitespeed.io:34.3.1 ${{ github.event.inputs.app_name }}" --budget.configPath ../sitespeed.io/budget.json -n 1
