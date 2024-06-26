@@ -1,24 +1,25 @@
-name: Audit Lighthouse
+name: Lighthouse Audit Web Performance
+
 on:
   workflow_dispatch:
     inputs:
       app_name:
         description: 'Name of the application'
         required: true
+
 jobs:
-  audit:
+  perf:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Node.js 14
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v1
+      - name: Generate Lighthouse Report
+        uses: justinribeiro/lighthouse-action@master
         with:
-          node-version: '14'
-      - name: Audit live URL
-        uses: jakejarvis/lighthouse-action@master
-        with:
-          url: '${{ github.event.inputs.app_name }}'
-      - name: Upload results as an artifact
+          secret: ${{ secrets.GITHUB_TOKEN }}
+          url: ${{ github.event.inputs.app_name }}
+          wptConnectionSpeed: threegfast
+      - name: Saving Lighthouse Audit Artifacts
         uses: actions/upload-artifact@master
         with:
-          name: report
-          path: './report'
+          name: lighthouse-artifacts
+          path: './results'

@@ -1,4 +1,4 @@
-name: Run Sitespeed.io
+name: Sitespeed.io monitor
 on:
   workflow_dispatch:
     inputs:
