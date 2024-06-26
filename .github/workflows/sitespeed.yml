@@ -18,5 +18,5 @@ jobs:
       - name: Upload sitespeed.io results
         uses: actions/upload-artifact@master
         with:
-          name: report
+          name: sitespeed.io
           path: './report'
