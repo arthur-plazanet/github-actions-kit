@@ -16,8 +16,11 @@ jobs:
       - name: running sitespeed.io container with arguments and optional Docker options
         run: docker run --rm -v "$(pwd):/sitespeed.io" sitespeedio/sitespeed.io:34.3.1 "${{ github.event.inputs.app_name }}" --budget.configPath sitespeed.io/budget.json -n 1
 
+      - name: ls -la
+        run: ls -la
+
       - name: Upload sitespeed.io results
         uses: actions/upload-artifact@master
         with:
           name: sitespeed-results
-          path: './sitespeed.io/sitespeed-result'
+          path: './sitespeed-result'
