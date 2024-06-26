@@ -1,7 +1,8 @@
 name: Fetch Playbooks from Private Repo
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [feature/ansible-server-metrics]
 
 jobs:
   fetch_and_run_playbooks:
