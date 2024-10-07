@@ -61,23 +61,3 @@ jobs:
           git add *
           git commit -m "Add decrypted file ${{ env.DATE }}"
           git push origin main
-
-      # - name: Commit decrypted file to private repo
-      #   run: |
-      #     git clone https://${{ secrets.CONFIG_PRIVATE_REPO_TOKEN }}@${{ secrets.PRIVATE_REPO_URL }} private-repo
-      #     cp decrypted-file.txt private-repo/data
-      #     cd private-repo
-      #     git add data/decrypted-file.txt
-      #     git commit -m "Add decrypted file ${{ env.DATE }}"
-      #     git push origin main
-
-      # - name: Create Pull Request
-      #   uses: peter-evans/create-pull-request@v6
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     commit-message: 'New data !'
-      #     branch: '${{ github.event.inputs.target_branch }} '
-      #     base: ${{ env.HEAD_BRANCH }}
-      #     title: 'Lokalise: Task completed for PR ${{ env.PR_NUMBER }} - ${{ env.DATE }}'
-      #     body: |
-      #       CREATED_TASK_URL="https://app.lokalise.com/project/${{ secrets.LOKALISE_PROJECT_ID_ARTHUR }}/?filter=${{ env.TASK_ID }}"
