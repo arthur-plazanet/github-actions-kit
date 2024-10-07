@@ -1,0 +1,77 @@
+name: Decrypt and Push to Private Repository
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: 'The branch to push the decrypted file to'
+        required: true
+        default: 'main'
+
+jobs:
+  decrypt_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Public Repository
+        uses: actions/checkout@v4
+
+      - name: Import GPG private key
+        run: |
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+
+      - name: Create directory for decrypted files
+        run: mkdir -p decrypted-files
+
+      - name: Decrypt all files in directory
+        run: |
+          for file in ${{ github.event.inputs.target_branch }}; do
+            gpg --quiet --batch --yes --decrypt --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
+            --output decrypted-files/$(basename "$file" .json) "$file"
+          done
+
+      - name: Set formatted date
+        run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+      - name: Checkout Private Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.PRIVATE_REPO_URL }}
+          ref: main
+          token: ${{ secrets.CONFIG_PRIVATE_REPO_TOKEN }}
+          path: private-repo
+
+      - name: Commit decrypted file to private repo
+        run: |
+          cp decrypted-file.txt private-repo/data
+          cd private-repo
+          git add data/decrypted-file.txt
+          git commit -m "Add decrypted file ${{ env.DATE }}"
+          git push origin main
+
+      # - name: Commit decrypted file to private repo
+      #   run: |
+      #     git clone https://${{ secrets.CONFIG_PRIVATE_REPO_TOKEN }}@${{ secrets.PRIVATE_REPO_URL }} private-repo
+      #     cp decrypted-file.txt private-repo/data
+      #     cd private-repo
+      #     git add data/decrypted-file.txt
+      #     git commit -m "Add decrypted file ${{ env.DATE }}"
+      #     git push origin main
+
+      # - name: Create Pull Request
+      #   uses: peter-evans/create-pull-request@v6
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     commit-message: 'New data !'
+      #     branch: '${{ github.event.inputs.target_branch }} '
+      #     base: ${{ env.HEAD_BRANCH }}
+      #     title: 'Lokalise: Task completed for PR ${{ env.PR_NUMBER }} - ${{ env.DATE }}'
+      #     body: |
+      #       CREATED_TASK_URL="https://app.lokalise.com/project/${{ secrets.LOKALISE_PROJECT_ID_ARTHUR }}/?filter=${{ env.TASK_ID }}"
