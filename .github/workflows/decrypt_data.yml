@@ -56,7 +56,7 @@ jobs:
 
       - name: Commit decrypted file to private repo
         run: |
-          cp decrypted-file.txt private-repo/data
+          cp decrypted-files/* private-repo/data
           cd private-repo
           git add *
           git commit -m "Add decrypted file ${{ env.DATE }}"
