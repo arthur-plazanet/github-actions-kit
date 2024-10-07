@@ -30,8 +30,8 @@ jobs:
       - name: Decrypt all files in directory
         run: |
           for file in data/${{ github.event.inputs.target_branch }}/*; do
-            gpg --quiet --batch --yes --decrypt --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
-            --output decrypted-files/$(basename "$file" .json) "$file"
+            gpg --quiet --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
+            --decrypt --output decrypted-files/$(basename "$file").json "$file"
           done
 
       - name: Set formatted date
