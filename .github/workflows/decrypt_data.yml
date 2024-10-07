@@ -58,7 +58,7 @@ jobs:
         run: |
           cp decrypted-file.txt private-repo/data
           cd private-repo
-          git add data/decrypted-file.txt
+          git add *
           git commit -m "Add decrypted file ${{ env.DATE }}"
           git push origin main
 
