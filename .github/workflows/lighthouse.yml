@@ -18,8 +18,33 @@ jobs:
           secret: ${{ secrets.GITHUB_TOKEN }}
           url: ${{ github.event.inputs.app_name }}
           wptConnectionSpeed: threegfast
+
+      - name: debug result folder
+        run: ls -la ./results
+
       - name: Saving Lighthouse Audit Artifacts
         uses: actions/upload-artifact@master
         with:
           name: lighthouse-artifacts
           path: './results'
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+      - name: Checkout Private Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.PRIVATE_REPO_URL }}
+          ref: main
+          token: ${{ secrets.CONFIG_PRIVATE_REPO_TOKEN }}
+          path: private-repo
+
+      - name: Commit decrypted file to private repo
+        run: |
+          cp -r ./results/* private-repo/data
+          cd private-repo
+          git add *
+          git commit -m "Add decrypted file ${{ env.DATE }}"
+          git push origin main
