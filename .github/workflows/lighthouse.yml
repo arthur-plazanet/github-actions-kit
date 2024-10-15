@@ -1,6 +1,8 @@
 name: Lighthouse Audit Web Performance
 
 on:
+  repository_dispatch:
+    types: [lighthouse-audit]
   workflow_dispatch:
     inputs:
       app_name:
@@ -43,8 +45,9 @@ jobs:
 
       - name: Commit decrypted file to private repo
         run: |
-          cp -r ./results/* private-repo/data
+          mkdir -p "private-repo/${{ secrets.PERFORMANCE_FOLDER }}/lighthouse"
+          cp -r ./results/* "private-repo/${{ secrets.PERFORMANCE_FOLDER }}/lighthouse"
           cd private-repo
           git add *
-          git commit -m "Add decrypted file ${{ env.DATE }}"
+          git commit -m "Add lighthouse audit - ${{ env.DATE }}"
           git push origin main
