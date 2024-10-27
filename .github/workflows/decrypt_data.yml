@@ -31,8 +31,9 @@ jobs:
         run: |
           for file in data/${{ github.event.inputs.target_branch }}/*; do
             if [ -f "$file" ]; then
+              mkdir -p "decrypted-files/${{ github.event.inputs.target_branch }}"
               gpg --quiet --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
-                --decrypt --output "decrypted-files/$(basename "$file").json" "$file"
+                --decrypt --output "decrypted-files/"${{ github.event.inputs.target_branch }}"/$(basename "$file").json" "$file"
             else
               echo "Skipping directory or invalid file: $file"
             fi
