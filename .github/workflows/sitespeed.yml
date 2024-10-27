@@ -1,5 +1,7 @@
 name: Sitespeed.io monitor
 on:
+  repository_dispatch:
+    types: [sitespeed-audit]
   workflow_dispatch:
     inputs:
       app_name:
