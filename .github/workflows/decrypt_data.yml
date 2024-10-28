@@ -27,16 +27,13 @@ jobs:
       - name: Create directory for decrypted files
         run: mkdir -p decrypted-files
 
-      - name: Decrypt all files in directory
+      - name: Decrypt all files in directory recursively
         run: |
-          for file in data/${{ github.event.inputs.target_branch }}/*; do
-            if [ -f "$file" ]; then
-              mkdir -p "decrypted-files/${{ github.event.inputs.target_branch }}"
-              gpg --quiet --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
-                --decrypt --output "decrypted-files/"${{ github.event.inputs.target_branch }}"/$(basename "$file").json" "$file"
-            else
-              echo "Skipping directory or invalid file: $file"
-            fi
+          find data/${{ github.event.inputs.target_branch }} -type f | while read -r file; do
+            output_dir="decrypted-files/${{ github.event.inputs.target_branch }}/$(dirname "$file" | sed 's|data/${{ github.event.inputs.target_branch }}/||')"
+            mkdir -p "$output_dir"
+            gpg --quiet --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
+              --decrypt --output "$output_dir/$(basename "$file").json" "$file"
           done
 
       - name: Set formatted date
