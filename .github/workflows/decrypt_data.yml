@@ -29,7 +29,7 @@ jobs:
 
       - name: Decrypt all files in directory
         run: |
-          for file in data/${{ github.event.inputs.target_branch }}/*; do
+          for file in data/${{ github.event.inputs.target_branch }}/**/*; do
             if [ -f "$file" ]; then
               mkdir -p "decrypted-files/${{ github.event.inputs.target_branch }}"
               gpg --quiet --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
@@ -57,6 +57,7 @@ jobs:
 
       - name: Commit decrypted file to private repo
         run: |
+          ls -la decrypted-files
           cp -r decrypted-files/* private-repo/data
           cd private-repo
           git add *
