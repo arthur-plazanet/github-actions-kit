@@ -60,7 +60,7 @@ jobs:
 
       - name: Commit decrypted file to private repo
         run: |
-          ls -la decrypted-files
+          ls -la
           cp -r decrypted-files/* private-repo/data
           cd private-repo
           git add *
