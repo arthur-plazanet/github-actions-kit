@@ -40,13 +40,6 @@ jobs:
       - name: running sitespeed.io container with arguments and optional Docker options
         run: docker run --rm -v "$RESULTS_PATH:/sitespeed.io" sitespeedio/sitespeed.io:34.3.1 "${{ env.APP_NAME }}" # --budget.configPath ../sitespeed.io/budget.json -n 1
 
-      - name: Rename sitespeed report folder
-        run: |
-          shopt -s globstar 
-          ls -la
-          mv ./sitespeed.io/sitespeed-results/${{ env.APP_NAME_NO_PROTOCOL }}/* "${{ env.RESULTS_PATH }}"
-          shopt -u globstar
-
       - name: ls -la
         run: |
           cd sitespeed-results
@@ -55,6 +48,13 @@ jobs:
           ls -la
           cd ${{ env.DATE }}
           ls -la
+
+      - name: Rename sitespeed report folder
+        run: |
+          shopt -s globstar 
+          ls -la
+          mv ./sitespeed.io/sitespeed-results/${{ env.APP_NAME_NO_PROTOCOL }}/* "${{ env.RESULTS_PATH }}"
+          shopt -u globstar
 
       - name: Upload sitespeed.io results
         uses: actions/upload-artifact@master
