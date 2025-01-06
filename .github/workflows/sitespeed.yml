@@ -38,7 +38,7 @@ jobs:
         # globstar option allows the ** pattern to match directories recursively.
 
       - name: running sitespeed.io container with arguments and optional Docker options
-        run: docker run --rm -v "$RESULTS_PATH:/sitespeed.io" sitespeedio/sitespeed.io:34.3.1 "${{ env.APP_NAME }}" --budget.configPath sitespeed.io/budget.json -n 1
+        run: docker run --rm -v "$RESULTS_PATH:/sitespeed.io" sitespeedio/sitespeed.io:34.3.1 "${{ env.APP_NAME }}" # --budget.configPath ../sitespeed.io/budget.json -n 1
 
       - name: Rename sitespeed report folder
         run: |
@@ -52,6 +52,8 @@ jobs:
           cd sitespeed-results
           ls -la
           cd ${{ env.APP_NAME_NO_PROTOCOL }}
+          ls -la
+          cd ${{ env.DATE }}
           ls -la
 
       - name: Upload sitespeed.io results
