@@ -17,20 +17,24 @@ jobs:
   perf:
     runs-on: ubuntu-latest
     steps:
-      - name: Add protocol to app name if missing
-        id: add-protocol
-        run: |
-          echo "app_name=${{ regex_replace(github.event.inputs.app_name, '^http', 'https') }}" >> $GITHUB_OUTPUT
+      - name: URL Processing
+        id: url_processor
+        uses: ./.github/actions/url-processor
+        with:
+          app_name: ${{ github.event.inputs.app_name }}
+          default_protocol: 'https://'
 
-      - name: Add app name with protocol to GITHUB_ENV
-        run: echo "APP_NAME=${{ steps.add-protocol.outputs.app_name }}" >> $GITHUB_ENV
+      - name: Set Environment Variables
+        run: |
+          echo "APP_NAME=${{ steps.url_processor.outputs.app_name_with_protocol }}" >> $GITHUB_ENV
+          echo "APP_NAME_NO_PROTOCOL=${{ steps.url_processor.outputs.app_name_no_protocol }}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v1
       - name: Generate Lighthouse Report
         uses: justinribeiro/lighthouse-action@master
         with:
           secret: ${{ secrets.GITHUB_TOKEN }}
-          url: ${{ github.event.inputs.app_name }}
+          url: ${{ env.APP_NAME }}
           wptConnectionSpeed: threegfast
 
       - name: debug result folder
@@ -40,13 +44,13 @@ jobs:
         run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
       - name: Rename lighthouse report folder
-        run: mv ./results/* ./results/${{ github.event.inputs.app_name }}/${{ env.DATE }}
+        run: mv ./results/* ./results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}
 
       - name: Saving Lighthouse Audit Artifacts
         uses: actions/upload-artifact@master
         with:
           name: lighthouse-artifacts
-          path: './results/${{ github.event.inputs.app_name }}/${{ env.DATE }}'
+          path: './results/${{ env.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}'
 
       - name: Set up Git
         run: |
@@ -64,8 +68,8 @@ jobs:
       - name: Commit decrypted file to private repo
         run: |
           mkdir -p "private-repo/${{ secrets.PERFORMANCE_FOLDER }}/lighthouse"
-          cp -r ./results/${{ github.event.inputs.app_name }}/${{ env.DATE }}/* "private-repo/${{ secrets.PERFORMANCE_FOLDER }}/lighthouse"
+          cp -r ./results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}/* "private-repo/${{ secrets.PERFORMANCE_FOLDER }}/lighthouse"
           cd private-repo
           git add *
-          git commit -m "Add lighthouse audit - ${{ github.event.inputs.app_name }} - ${{ env.DATE }}"
+          git commit -m "Add lighthouse audit - ${{ env.APP_NAME_NO_PROTOCOL }} - ${{ env.DATE }}"
           git push origin main
