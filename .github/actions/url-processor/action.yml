@@ -4,16 +4,10 @@ inputs:
   app_name:
     description: 'Name or URL of the application'
     required: true
-    type: string
   default_protocol:
     description: 'Default protocol to prepend if missing'
     required: false
     default: 'https://'
-outputs:
-  app_name_with_protocol:
-    description: 'URL with protocol'
-  app_name_no_protocol:
-    description: 'URL without protocol'
 runs:
   using: 'composite'
   steps:
