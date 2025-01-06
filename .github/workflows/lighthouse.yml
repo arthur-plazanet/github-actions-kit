@@ -19,9 +19,10 @@ jobs:
     steps:
       - name: Add protocol to app name if missing
         id: add-protocol
-        run: echo "::set-output name=app_name::${{ github.event.inputs.app_name | regex_replace('^http', 'https') }}"
+        run: |
+          echo "app_name=${{ regex_replace(github.event.inputs.app_name, '^http', 'https') }}" >> $GITHUB_OUTPUT
 
-      - name: Add app name with protocal to GITHUB_ENV
+      - name: Add app name with protocol to GITHUB_ENV
         run: echo "APP_NAME=${{ steps.add-protocol.outputs.app_name }}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v1
