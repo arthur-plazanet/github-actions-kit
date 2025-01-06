@@ -35,7 +35,10 @@ jobs:
 
       - name: Rename sitespeed report folder
         run: |
-          RESULTS_PATH="./sitespeed-result"
+          ls -la
+          cd sitespeed-result && ls -la
+          cd ../sitespeed.io && ls -la
+          RESULTS_PATH="./sitespeed.io/sitespeed-result"
           echo "RESULTS_PATH=$RESULTS_PATH" >> $GITHUB_ENV
           cp $RESULTS_PATH/*.html $RESULTS_PATH/index.html
 
