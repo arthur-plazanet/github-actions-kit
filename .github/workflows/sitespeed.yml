@@ -37,6 +37,7 @@ jobs:
         run: |
           RESULTS_PATH="./sitespeed-result"
           echo "RESULTS_PATH=$RESULTS_PATH" >> $GITHUB_ENV
+          cp $RESULTS_PATH/*.html $RESULTS_PATH/index.html
 
       - name: ls -la
         run: ls -la
@@ -62,7 +63,7 @@ jobs:
 
       - name: Commit files to private repo
         run: |
-          PRIVATE_REPO_PATH="private-repo/${{ secrets.PERFORMANCE_FOLDER }}/sitespeed"
+          PRIVATE_REPO_PATH="private-repo/${{ secrets.PERFORMANCE_FOLDER }}/sitespeed/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}""
           mkdir -p $PRIVATE_REPO_PATH
           cp -r ${{ env.RESULTS_PATH }}/* $PRIVATE_REPO_PATH
           cd private-repo
