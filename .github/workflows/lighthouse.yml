@@ -17,6 +17,13 @@ jobs:
   perf:
     runs-on: ubuntu-latest
     steps:
+      - name: Add protocol to app name if missing
+        id: add-protocol
+        run: echo "::set-output name=app_name::${{ github.event.inputs.app_name | regex_replace('^http', 'https') }}"
+
+      - name: Add app name with protocal to GITHUB_ENV
+        run: echo "APP_NAME=${{ steps.add-protocol.outputs.app_name }}" >> $GITHUB_ENV
+
       - uses: actions/checkout@v1
       - name: Generate Lighthouse Report
         uses: justinribeiro/lighthouse-action@master
@@ -30,6 +37,9 @@ jobs:
 
       - name: Get current date
         run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+      - name: Rename lighthouse report folder
+        run: mv ./results/* ./results/${{ github.event.inputs.app_name }}/${{ env.DATE }}
 
       - name: Saving Lighthouse Audit Artifacts
         uses: actions/upload-artifact@master
