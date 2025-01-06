@@ -73,7 +73,7 @@ jobs:
       - name: Commit decrypted file to private repo
         run: |
           mkdir -p "private-repo/${{ secrets.PERFORMANCE_FOLDER }}/lighthouse"
-          cp -r ./performance-results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}/* "private-repo/${{ secrets.PERFORMANCE_FOLDER }}/lighthouse"
+          cp -r ./performance-results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}/* "private-repo/${{ secrets.PERFORMANCE_FOLDER }}/lighthouse/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}"
           cd private-repo
           git add *
           git commit -m "Add lighthouse audit - ${{ env.APP_NAME_NO_PROTOCOL }} - ${{ env.DATE }}"
