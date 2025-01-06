@@ -33,7 +33,7 @@ jobs:
       - name: Rename sitespeed report folder
         run: |
           ls -la
-          RESULTS_PATH="./sitespeed-results/${{ env.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}"
+          RESULTS_PATH="./results/${{ env.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}"
           echo "RESULTS_PATH=$RESULTS_PATH" >> $GITHUB_ENV
         # globstar option allows the ** pattern to match directories recursively.
 
