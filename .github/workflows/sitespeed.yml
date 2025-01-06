@@ -39,8 +39,8 @@ jobs:
           RESULTS_PATH="./sitespeed-results/${{ env.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}"
           echo "RESULTS_PATH=$RESULTS_PATH" >> $GITHUB_ENV
           shopt -s globstar 
-          cp "$RESULTS_PATH"/**/*.html "$RESULTS_PATH/index.html"
-          cp "$RESULTS_PATH"/**/*.json "$RESULTS_PATH/index.json"
+          cp ./sitespeed-results/**/*.html $RESULTS_PATH/index.html
+          cp ./sitespeed-results/**/*.json $RESULTS_PATH/index.json
           shopt -u globstar
         # globstar option allows the ** pattern to match directories recursively.
 
