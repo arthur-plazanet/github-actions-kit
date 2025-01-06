@@ -22,7 +22,7 @@ jobs:
 
       - name: URL Processing
         id: url_processor
-        uses: ./.github/actions/url-processor
+        uses: ./.github/actions/url-processor.yml
         with:
           app_name: ${{ github.event.inputs.app_name }}
           default_protocol: 'https://'
