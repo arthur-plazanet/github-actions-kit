@@ -48,14 +48,16 @@ jobs:
 
       - name: Rename lighthouse report folder
         run: |
-          mkdir -p ./performance-results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}
-          mv ./results/* ./performance-results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}
+          RESULTS_PATH="./temp-results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}"
+          mkdir -p $RESULTS_PATH
+          mv ./results/* $RESULTS_PATH
+          echo "RESULTS_PATH=$RESULTS_PATH" >> $GITHUB_ENV
 
-      - name: Saving Lighthouse Audit Artifacts
-        uses: actions/upload-artifact@master
-        with:
-          name: lighthouse-artifacts
-          path: './performance-results/${{ env.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}'
+      # - name: Saving Lighthouse Audit Artifacts
+      #   uses: actions/upload-artifact@master
+      #   with:
+      #     name: lighthouse-artifacts
+      #     path: './performance-results/${{ env.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}'
 
       - name: Set up Git
         run: |
@@ -70,10 +72,11 @@ jobs:
           token: ${{ secrets.CONFIG_PRIVATE_REPO_TOKEN }}
           path: private-repo
 
-      - name: Commit decrypted file to private repo
+      - name: Commit files to private repo
         run: |
-          mkdir -p "private-repo/${{ secrets.PERFORMANCE_FOLDER }}/lighthouse/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}"
-          cp -r ./performance-results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}/* "private-repo/${{ secrets.PERFORMANCE_FOLDER }}/lighthouse/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}"
+          PRIVATE_REPO_PATH="private-repo/${{ secrets.PERFORMANCE_FOLDER }}/lighthouse/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}"
+          mkdir -p $PRIVATE_REPO_PATH
+          cp -r ${{ env.RESULTS_PATH }}/* $PRIVATE_REPO_PATH
           cd private-repo
           git add *
           git commit -m "Add lighthouse audit - ${{ env.APP_NAME_NO_PROTOCOL }} - ${{ env.DATE }}"
