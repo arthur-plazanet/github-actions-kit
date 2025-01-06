@@ -47,7 +47,9 @@ jobs:
         run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
       - name: Rename lighthouse report folder
-        run: mv ./results/* ./results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}
+        run: |
+          mkdir -p ./results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}
+          mv ./results/* ./results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}
 
       - name: Saving Lighthouse Audit Artifacts
         uses: actions/upload-artifact@master
