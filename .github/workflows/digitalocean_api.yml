@@ -1,0 +1,31 @@
+name: Send Requests to DigitalOcean API
+
+on:
+  workflow_dispatch:
+
+jobs:
+  digitalocean-api-requests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./scripts/digitalocean-api
+    strategy:
+      matrix:
+        script:
+          - monitoring.sh
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Environment Variables
+        env:
+          DIGITALOCEAN_API_TOKEN: ${{ secrets.DIGITALOCEAN_API_TOKEN }}
+        run: |
+          echo "DIGITALOCEAN_TOKEN=${DIGITALOCEAN_API_TOKEN}" >> $GITHUB_ENV
+          echo "NOW=$(date '+%s')" >> $GITHUB_ENV
+
+      - name: Execute cURL Script ${{ matrix.script }}
+        run: |
+          chmod +x ${{ matrix.script }}
+          ./${{ matrix.script }}
