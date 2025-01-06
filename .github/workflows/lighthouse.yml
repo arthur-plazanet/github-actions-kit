@@ -48,14 +48,14 @@ jobs:
 
       - name: Rename lighthouse report folder
         run: |
-          mkdir -p ./results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}
-          mv ./results/* ./results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}
+          mkdir -p ./performance-results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}
+          mv ./results/* ./performance-results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}
 
       - name: Saving Lighthouse Audit Artifacts
         uses: actions/upload-artifact@master
         with:
           name: lighthouse-artifacts
-          path: './results/${{ env.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}'
+          path: './performance-results/${{ env.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}'
 
       - name: Set up Git
         run: |
@@ -73,7 +73,7 @@ jobs:
       - name: Commit decrypted file to private repo
         run: |
           mkdir -p "private-repo/${{ secrets.PERFORMANCE_FOLDER }}/lighthouse"
-          cp -r ./results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}/* "private-repo/${{ secrets.PERFORMANCE_FOLDER }}/lighthouse"
+          cp -r ./performance-results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}/* "private-repo/${{ secrets.PERFORMANCE_FOLDER }}/lighthouse"
           cd private-repo
           git add *
           git commit -m "Add lighthouse audit - ${{ env.APP_NAME_NO_PROTOCOL }} - ${{ env.DATE }}"
