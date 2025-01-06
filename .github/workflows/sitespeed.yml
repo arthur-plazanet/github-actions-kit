@@ -43,7 +43,8 @@ jobs:
       - name: Rename sitespeed report folder
         run: |
           shopt -s globstar 
-          mv ./sitespeed-results/${{ env.APP_NAME_NO_PROTOCOL }}/* "${{ env.RESULTS_PATH }}"
+          ls -la
+          mv ./sitespeed.io/sitespeed-results/${{ env.APP_NAME_NO_PROTOCOL }}/* "${{ env.RESULTS_PATH }}"
           shopt -u globstar
 
       - name: ls -la
