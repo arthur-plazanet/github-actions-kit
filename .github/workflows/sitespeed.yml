@@ -42,6 +42,7 @@ jobs:
 
       - name: ls -la
         run: |
+          ls -la
           cd sitespeed-results
           ls -la
           cd ${{ env.APP_NAME_NO_PROTOCOL }}
