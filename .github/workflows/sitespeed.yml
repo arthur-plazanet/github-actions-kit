@@ -28,7 +28,7 @@ jobs:
           echo "APP_NAME_NO_PROTOCOL=${{ steps.url_processor.outputs.app_name_no_protocol }}" >> $GITHUB_ENV
 
       - name: running sitespeed.io container with arguments and optional Docker options
-        run: docker run --rm -v "$(pwd):/sitespeed.io" sitespeedio/sitespeed.io:34.3.1 "${{ APP_NAME }}" --budget.configPath sitespeed.io/budget.json -n 1
+        run: docker run --rm -v "$(pwd):/sitespeed.io" sitespeedio/sitespeed.io:34.3.1 "${{ env.APP_NAME }}" --budget.configPath sitespeed.io/budget.json -n 1
 
       - name: Get current date
         run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
