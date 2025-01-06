@@ -51,6 +51,8 @@ jobs:
           RESULTS_PATH="./temp-results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}"
           mkdir -p $RESULTS_PATH
           mv ./results/* $RESULTS_PATH
+          mv $RESULTS_PATH/*.json $RESULTS_PATH/index.json
+          mv $RESULTS_PATH/*.html $RESULTS_PATH/index.html
           echo "RESULTS_PATH=$RESULTS_PATH" >> $GITHUB_ENV
 
       # - name: Saving Lighthouse Audit Artifacts

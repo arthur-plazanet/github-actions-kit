@@ -27,9 +27,6 @@ jobs:
           echo "APP_NAME=${{ steps.url_processor.outputs.app_name_with_protocol }}" >> $GITHUB_ENV
           echo "APP_NAME_NO_PROTOCOL=${{ steps.url_processor.outputs.app_name_no_protocol }}" >> $GITHUB_ENV
 
-      - name: running sitespeed.io container with arguments and optional Docker options
-        run: docker run --rm -v "$(pwd):/sitespeed.io" sitespeedio/sitespeed.io:34.3.1 "${{ env.APP_NAME }}" --budget.configPath sitespeed.io/budget.json -n 1
-
       - name: Get current date
         run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
@@ -38,14 +35,24 @@ jobs:
           ls -la
           RESULTS_PATH="./sitespeed-results/${{ env.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}"
           echo "RESULTS_PATH=$RESULTS_PATH" >> $GITHUB_ENV
-          shopt -s globstar 
-          cp ./sitespeed-results/**/*.html $RESULTS_PATH/index.html
-          cp ./sitespeed-results/**/*.json $RESULTS_PATH/index.json
-          shopt -u globstar
         # globstar option allows the ** pattern to match directories recursively.
 
+      - name: running sitespeed.io container with arguments and optional Docker options
+        run: docker run --rm -v "$RESULTS_PATH:/sitespeed.io" sitespeedio/sitespeed.io:34.3.1 "${{ env.APP_NAME }}" --budget.configPath sitespeed.io/budget.json -n 1
+
+      - name: Rename sitespeed report folder
+        run: |
+          shopt -s globstar 
+          cp ./sitespeed-results/"${{ env.APP_NAME_NO_PROTOCOL }}"/* "${{ env.RESULTS_PATH }}"
+          cp ./sitespeed-results/**/*.json "${{ env.RESULTS_PATH }}"/index.json
+          shopt -u globstar
+
       - name: ls -la
-        run: ls -la
+        run: |
+          cd sitespeed-results
+          ls -la
+          cd ${{ env.APP_NAME_NO_PROTOCOL }}
+          ls -la
 
       - name: Upload sitespeed.io results
         uses: actions/upload-artifact@master
