@@ -8,12 +8,19 @@ inputs:
     description: 'Default protocol to prepend if missing'
     required: false
     default: 'https://'
+outputs:
+  app_name_with_protocol:
+    value: ${{ steps.process_url.outputs.app_name_with_protocol }}
+    description: 'URL with protocol'
+  app_name_no_protocol:
+    value: ${{ steps.process_url.outputs.app_name_no_protocol }}
+    description: 'URL without protocol'
 runs:
   using: 'composite'
   steps:
     - name: Process URL
-      id: process_url
       shell: bash
+      id: process_url
       run: |
         ./scripts/github-actions/process_url.sh "${{ github.event.inputs.app_name }}"
 
