@@ -36,8 +36,6 @@ jobs:
       - name: Rename sitespeed report folder
         run: |
           RESULTS_PATH="$(pwd):/sitespeed.io/sitespeed-result"
-          mkdir -p $RESULTS_PATH
-          mv ./results/* $RESULTS_PATH
           echo "RESULTS_PATH=$RESULTS_PATH" >> $GITHUB_ENV
 
       - name: ls -la
