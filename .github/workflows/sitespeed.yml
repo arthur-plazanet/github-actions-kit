@@ -13,10 +13,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: code checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: URL Processing
+        id: url_processor
+        uses: ./.github/actions/url-processor
+        with:
+          app_name: ${{ github.event.inputs.app_name }}
+          default_protocol: 'https://'
+
+      - name: Set Environment Variables
+        run: |
+          echo "APP_NAME=${{ steps.url_processor.outputs.app_name_with_protocol }}" >> $GITHUB_ENV
+          echo "APP_NAME_NO_PROTOCOL=${{ steps.url_processor.outputs.app_name_no_protocol }}" >> $GITHUB_ENV
 
       - name: running sitespeed.io container with arguments and optional Docker options
-        run: docker run --rm -v "$(pwd):/sitespeed.io" sitespeedio/sitespeed.io:34.3.1 "${{ github.event.inputs.app_name }}" --budget.configPath sitespeed.io/budget.json -n 1
+        run: docker run --rm -v "$(pwd):/sitespeed.io" sitespeedio/sitespeed.io:34.3.1 "${{ APP_NAME }}" --budget.configPath sitespeed.io/budget.json -n 1
+
+      - name: Get current date
+        run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+      - name: Rename sitespeed report folder
+        run: |
+          RESULTS_PATH="$(pwd):/sitespeed.io/sitespeed-result"
+          mkdir -p $RESULTS_PATH
+          mv ./results/* $RESULTS_PATH
+          echo "RESULTS_PATH=$RESULTS_PATH" >> $GITHUB_ENV
 
       - name: ls -la
         run: ls -la
@@ -26,3 +48,26 @@ jobs:
         with:
           name: sitespeed-results
           path: './sitespeed-result'
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+      - name: Checkout Private Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.PRIVATE_REPO_URL }}
+          ref: main
+          token: ${{ secrets.CONFIG_PRIVATE_REPO_TOKEN }}
+          path: private-repo
+
+      - name: Commit files to private repo
+        run: |
+          PRIVATE_REPO_PATH="private-repo/${{ secrets.PERFORMANCE_FOLDER }}/sitespeed"
+          mkdir -p $PRIVATE_REPO_PATH
+          cp -r ${{ env.RESULTS_PATH }}/* $PRIVATE_REPO_PATH
+          cd private-repo
+          git add *
+          git commit -m "Add sitespeed audit - ${{ env.APP_NAME_NO_PROTOCOL }} - ${{ env.DATE }}"
+          git push origin main
