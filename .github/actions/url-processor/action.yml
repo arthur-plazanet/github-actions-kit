@@ -13,6 +13,7 @@ runs:
   steps:
     - name: Process URL
       id: process_url
+      shell: bash
       run: |
         ./scripts/github-actions/process_url.sh "${{ github.event.inputs.app_name }}"
 
