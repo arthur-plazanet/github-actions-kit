@@ -1,0 +1,29 @@
+name: 'URL Processor'
+description: 'Validates and processes URLs by adding/removing protocols.'
+inputs:
+  app_name:
+    description: 'Name or URL of the application'
+    required: true
+    type: string
+  default_protocol:
+    description: 'Default protocol to prepend if missing'
+    required: false
+    default: 'https://'
+outputs:
+  app_name_with_protocol:
+    description: 'URL with protocol'
+  app_name_no_protocol:
+    description: 'URL without protocol'
+runs:
+  using: 'composite'
+  steps:
+    - name: Process URL
+      id: process_url
+      run: |
+        ./scripts/github-actions/process_url.sh "${{ github.event.inputs.app_name }}"
+
+    - name: Set Outputs
+      shell: bash
+      run: |
+        echo "app_name_with_protocol=${{ steps.add_protocol.outputs.app_name_with_protocol }}" >> $GITHUB_OUTPUT
+        echo "app_name_no_protocol=${{ steps.remove_protocol.outputs.app_name_no_protocol }}" >> $GITHUB_OUTPUT
