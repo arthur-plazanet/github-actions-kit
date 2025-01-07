@@ -43,9 +43,11 @@ jobs:
       - name: ls -la
         run: |
           ls -la
-          cd sitespeed.io
+          cd results
           ls -la
-          cd sitespeed-results
+          cd sitespeed-results || exit
+          ls -la
+          cd sitespeed.io || exit
           ls -la
           cd ${{ env.APP_NAME_NO_PROTOCOL }}
           ls -la
