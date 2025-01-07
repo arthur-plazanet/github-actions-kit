@@ -78,7 +78,7 @@ jobs:
 
       - name: Commit files to private repo
         run: |
-          PRIVATE_REPO_PATH="private-repo/${{ secrets.PERFORMANCE_FOLDER }}/sitespeed/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}""
+          PRIVATE_REPO_PATH="private-repo/${{ secrets.PERFORMANCE_FOLDER }}/sitespeed/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}"
           mkdir -p $PRIVATE_REPO_PATH
           cp -r ${{ env.RESULTS_PATH }}/* $PRIVATE_REPO_PATH
           cd private-repo
