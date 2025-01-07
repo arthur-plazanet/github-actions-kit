@@ -47,19 +47,15 @@ jobs:
           ls -la
           cd sitespeed-results || exit
           ls -la
-          cd sitespeed.io || exit
-          ls -la
           cd ${{ env.APP_NAME_NO_PROTOCOL }}
           ls -la
-          cd ${{ env.DATE }}
-          ls -la
 
-      - name: Rename sitespeed report folder
-        run: |
-          shopt -s globstar 
-          ls -la
-          mv ./sitespeed.io/sitespeed-results/${{ env.APP_NAME_NO_PROTOCOL }}/* "${{ env.RESULTS_PATH }}"
-          shopt -u globstar
+      # - name: Rename sitespeed report folder
+      #   run: |
+      #     shopt -s globstar
+      #     ls -la
+      #     mv ./sitespeed.io/sitespeed-results/${{ env.APP_NAME_NO_PROTOCOL }}/* "${{ env.RESULTS_PATH }}"
+      #     shopt -u globstar
 
       - name: Upload sitespeed.io results
         uses: actions/upload-artifact@master
