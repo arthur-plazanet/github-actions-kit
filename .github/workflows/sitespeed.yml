@@ -27,13 +27,13 @@ jobs:
           echo "APP_NAME=${{ steps.url_processor.outputs.app_name_with_protocol }}" >> $GITHUB_ENV
           echo "APP_NAME_NO_PROTOCOL=${{ steps.url_processor.outputs.app_name_no_protocol }}" >> $GITHUB_ENV
 
-      - name: Get current date
-        run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+      - name: Get current timestamp
+        run: echo "TIMESTAMP=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
 
       - name: Rename sitespeed report folder
         run: |
           ls -la
-          RESULTS_PATH="./results/${{ env.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}"
+          RESULTS_PATH="./results/${{ env.APP_NAME_NO_PROTOCOL }}/${{ env.TIMESTAMP }}"
           echo "RESULTS_PATH=$RESULTS_PATH" >> $GITHUB_ENV
         # globstar option allows the ** pattern to match directories recursively.
 
@@ -61,7 +61,7 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: sitespeed-results
-          path: './sitespeed-result'
+          path: './results'
 
       - name: Set up Git
         run: |
@@ -78,10 +78,19 @@ jobs:
 
       - name: Commit files to private repo
         run: |
-          PRIVATE_REPO_PATH="private-repo/${{ secrets.PERFORMANCE_FOLDER }}/sitespeed/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}"
-          mkdir -p $PRIVATE_REPO_PATH
-          cp -r ${{ env.RESULTS_PATH }}/* $PRIVATE_REPO_PATH
+          # Define the destination path in the private repo
+          PRIVATE_REPO_PATH="private-repo/${{ secrets.PERFORMANCE_FOLDER }}/sitespeed/${{ env.APP_NAME_NO_PROTOCOL }}/${{ env.TIMESTAMP }}"
+
+          # Create the destination directory
+          mkdir -p "$PRIVATE_REPO_PATH"
+
+          # Copy the specific sitespeed result folder to the destination
+          cp -r "${RESULTS_PATH}/sitespeed-result/${{ env.APP_NAME_NO_PROTOCOL }}"/* "$PRIVATE_REPO_PATH"
+
+          # Navigate to the private repository
           cd private-repo
-          git add *
-          git commit -m "Add sitespeed audit - ${{ env.APP_NAME_NO_PROTOCOL }} - ${{ env.DATE }}"
+
+          # Add, commit, and push the changes
+          git add .
+          git commit -m "Add sitespeed audit - ${{ env.APP_NAME_NO_PROTOCOL }} - ${{ env.TIMESTAMP }}"
           git push origin main

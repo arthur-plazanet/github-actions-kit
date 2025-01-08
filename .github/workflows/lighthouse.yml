@@ -44,11 +44,11 @@ jobs:
         run: ls -la ./results
 
       - name: Get current date
-        run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+        run: echo "TIMESTAMP=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
 
       - name: Rename lighthouse report folder
         run: |
-          RESULTS_PATH="./temp-results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}"
+          RESULTS_PATH="./temp-results/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.TIMESTAMP }}"
           mkdir -p $RESULTS_PATH
           mv ./results/* $RESULTS_PATH
           mv $RESULTS_PATH/*.json $RESULTS_PATH/index.json
@@ -76,7 +76,7 @@ jobs:
 
       - name: Commit files to private repo
         run: |
-          PRIVATE_REPO_PATH="private-repo/${{ secrets.PERFORMANCE_FOLDER }}/lighthouse/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.DATE }}"
+          PRIVATE_REPO_PATH="private-repo/${{ secrets.PERFORMANCE_FOLDER }}/lighthouse/${{ ENV.APP_NAME_NO_PROTOCOL }}/${{ env.TIMESTAMP }}"
           mkdir -p $PRIVATE_REPO_PATH
           cp -r ${{ env.RESULTS_PATH }}/* $PRIVATE_REPO_PATH
           cd private-repo
