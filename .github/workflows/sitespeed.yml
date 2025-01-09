@@ -38,7 +38,7 @@ jobs:
         # globstar option allows the ** pattern to match directories recursively.
 
       - name: running sitespeed.io container with arguments and optional Docker options
-        run: docker run --rm -v "$RESULTS_PATH:/sitespeed.io" sitespeedio/sitespeed.io:34.3.1 "${{ env.APP_NAME }}" # --budget.configPath ../sitespeed.io/budget.json -n 1
+        run: docker run --rm -v "${{ RESULTS_PATH }}:/sitespeed.io" sitespeedio/sitespeed.io:34.3.1 "${{ env.APP_NAME }}" # --budget.configPath ../sitespeed.io/budget.json -n 1
 
       # - name: ls -la
       #   run: |
@@ -83,9 +83,10 @@ jobs:
 
           # Create the destination directory
           mkdir -p "$PRIVATE_REPO_PATH"
-
+          ls -la "$PRIVATE_REPO_PATH"
+          ls -la "${{ env.RESULTS_PATH }}"
           # Copy the specific sitespeed result folder to the destination
-          cp "${RESULTS_PATH}"/* "$PRIVATE_REPO_PATH"
+          cp "${{ env.RESULTS_PATH }}/*" "$PRIVATE_REPO_PATH"
 
           # Navigate to the private repository
           cd private-repo
