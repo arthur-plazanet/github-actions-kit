@@ -85,7 +85,7 @@ jobs:
           mkdir -p "$PRIVATE_REPO_PATH"
           ls -la "$PRIVATE_REPO_PATH"
           # Copy the specific sitespeed result folder to the destination
-          cp "./sitespeed-result/*" "$PRIVATE_REPO_PATH"
+          cp "./*" "$PRIVATE_REPO_PATH"
 
           # Navigate to the private repository
           cd private-repo
