@@ -27,39 +27,22 @@ jobs:
       - name: Create directory for decrypted files
         run: mkdir -p decrypted-files
 
-      - name: Decrypt Files Recursively
+      - name: Decrypt Files Recursively (Exclude README.md)
         run: |
-          shopt -s globstar
-          for file in data/**/*; do
-            if [ -f "$file" ]; then
-              # Ensure special characters like spaces are handled properly
-              file_path="$(realpath "$file")"
+          find data/ -type f ! -name 'README.md' | while read -r file; do
+            echo "Processing: $file"
+            relative_path="${file#data/}"
+            output_dir="decrypted-files/$(dirname "$relative_path")"
+            mkdir -p "$output_dir"
 
-              # Verify if the file contains GPG encrypted data
-              if gpg --quiet --batch --yes --pinentry-mode loopback --passphrase "" --decrypt "$file" > /dev/null 2>&1; then
-                echo "Decrypting: \"$file_path\""
-                
-                # Remove 'data/' prefix to get the relative path
-                relative_path="${file#data/}"
-                echo "Relative path: \"$relative_path\""
-                output_dir="decrypted-files/$(dirname "$relative_path")"
-                
-                # Create necessary subdirectories
-                mkdir -p "$output_dir"
-
-                # Decrypt file and save with .json extension
-                gpg --quiet --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" \
-                  --decrypt --output "$output_dir/$(basename "$file").json" "$file"
-
-                echo "Decrypted successfully: \"$file_path\""
-              else
-                echo "Skipping non-GPG file: \"$file_path\""
-              fi
+            if gpg --quiet --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}"
+              --decrypt --output "$output_dir/$(basename "$file").json" "$file"; then
+              echo "Decrypted successfully: $file"
+            else
+              echo "Skipping non-GPG file: $file"
             fi
           done
-        shell: bash # Ensure the correct shell is used
-        env:
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        shell: bash
 
       - name: Debug Decrypted Files
         run: ls -laR decrypted-files/
