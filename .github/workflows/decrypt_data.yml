@@ -32,8 +32,16 @@ jobs:
           shopt -s globstar
           for file in data/**/*; do
             if [ -f "$file" ]; then
+              echo "Decrypting $file"
               relative_path="${file#data/}"
+              echo "Relative path: "${file#data/}"
+              echo "Relative path: "${file##data/}"
+              echo "Relative path: "${file##*data/}"
+              echo "Relative path: "${file##*/}"
+              echo "Relative path: $relative_path"
               output_dir="decrypted-files/$(dirname "$relative_path")"
+              echo dirname "$relative_path"
+              echo "Output directory: $output_dir"
               mkdir -p "$output_dir"
               gpg --quiet --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
                 --decrypt --output "$output_dir/$(basename "$file").json" "$file"
