@@ -27,33 +27,41 @@ jobs:
       - name: Create directory for decrypted files
         run: mkdir -p decrypted-files
 
-      - name: Decrypt encrypted files
+      - name: Decrypt Files Recursively
         run: |
           shopt -s globstar
           for file in data/**/*; do
             if [ -f "$file" ]; then
-              # Check if the file contains GPG encrypted data
-              if gpg --list-packets "$file" > /dev/null 2>&1; then
-                echo "Decrypting $file"
+              # Ensure special characters like spaces are handled properly
+              file_path="$(realpath "$file")"
 
-                # Remove the 'data/' prefix to get the relative path
+              # Verify if the file contains GPG encrypted data
+              if gpg --quiet --batch --yes --pinentry-mode loopback --passphrase "" --decrypt "$file" > /dev/null 2>&1; then
+                echo "Decrypting: \"$file_path\""
+                
+                # Remove 'data/' prefix to get the relative path
                 relative_path="${file#data/}"
-
-                # Set the output directory in decrypted-files, preserving subdirectory structure
                 output_dir="decrypted-files/$(dirname "$relative_path")"
+                
+                # Create necessary subdirectories
                 mkdir -p "$output_dir"
 
-                # Decrypt the file and save it with .json extension
-                gpg --quiet --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
+                # Decrypt file and save with .json extension
+                gpg --quiet --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" \
                   --decrypt --output "$output_dir/$(basename "$file").json" "$file"
 
-                echo "Decrypted successfully: $file"
+                echo "Decrypted successfully: \"$file_path\""
               else
-                echo "Skipping non-GPG file: $file"
+                echo "Skipping non-GPG file: \"$file_path\""
               fi
             fi
           done
-        shell: bash
+        shell: bash # Ensure the correct shell is used
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Debug Decrypted Files
+        run: ls -laR decrypted-files/
 
       - name: Set formatted date
         run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
