@@ -41,6 +41,7 @@ jobs:
                 
                 # Remove 'data/' prefix to get the relative path
                 relative_path="${file#data/}"
+                echo "Relative path: \"$relative_path\""
                 output_dir="decrypted-files/$(dirname "$relative_path")"
                 
                 # Create necessary subdirectories
