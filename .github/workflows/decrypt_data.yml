@@ -27,18 +27,16 @@ jobs:
       - name: Create directory for decrypted files
         run: mkdir -p decrypted-files
 
-      - name: Decrypt all files in directory recursively, preserving subdirectory structure
+      - name: Decrypt all files in directory
         run: |
-          find data/ -type f | while read -r file; do
-            # Get the relative path of the file from the target branch directory
-            relative_path="${file#data/}"
-            # Set the output directory in decrypted-files, preserving subdirectory structure
-            output_dir="decrypted-files/$(dirname "$relative_path")"
-            # Create necessary subdirectories in the output path
-            mkdir -p "$output_dir"
-            # Decrypt the file to the corresponding output path
-            gpg --quiet --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
-              --decrypt --output "$output_dir/$(basename "$file").json" "$file"
+          for file in data/*; do
+            if [ -f "$file" ]; then
+              mkdir -p "decrypted-files/*"
+              gpg --quiet --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
+                --decrypt --output "decrypted-files/$(basename "$file").json" "$file"
+            else
+              echo "Skipping directory or invalid file: $file"
+            fi
           done
 
       - name: Set formatted date
@@ -59,7 +57,6 @@ jobs:
 
       - name: Commit decrypted file to private repo
         run: |
-          ls -la
           cp -r decrypted-files/* private-repo/data
           cd private-repo
           git add *
