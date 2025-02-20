@@ -66,11 +66,15 @@ jobs:
       - name: Commit decrypted file to private repo
         run: |
           ls -la
-          cp -r decrypted-files/* private-repo/data
           ls -la private-repo/data
           ls -la decrypted-files
+          cp -r decrypted-files private-repo/data
+          ls -la private-repo/data
+          ls -la private-repo/data/log
+          ls -la decrypted-files
+          ls -la decrypted-filed/log
           cd private-repo
           git status
-          git add *
+          git add .
           git commit -m "Add decrypted file ${{ env.DATE }}"
           git push origin main
