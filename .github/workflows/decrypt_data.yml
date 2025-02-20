@@ -69,10 +69,11 @@ jobs:
           ls -la private-repo/data
           ls -la decrypted-files
           cp -r decrypted-files private-repo/data
+          echo "ls -la private-repo/data"
           ls -la private-repo/data
+          echo "ls -la private-repo/data/log"
           ls -la private-repo/data/log
           ls -la decrypted-files
-          ls -la decrypted-filed/log
           cd private-repo
           git status
           git add .
