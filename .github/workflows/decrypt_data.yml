@@ -70,6 +70,7 @@ jobs:
           ls -la private-repo/data
           ls -la decrypted-files
           cd private-repo
+          git status
           git add *
           git commit -m "Add decrypted file ${{ env.DATE }}"
           git push origin main
