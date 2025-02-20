@@ -67,6 +67,8 @@ jobs:
         run: |
           ls -la
           cp -r decrypted-files/* private-repo/data
+          ls -la private-repo/data
+          ls -la decrypted-files
           cd private-repo
           git add *
           git commit -m "Add decrypted file ${{ env.DATE }}"
