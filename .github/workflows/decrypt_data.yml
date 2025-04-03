@@ -27,20 +27,38 @@ jobs:
       - name: Create directory for decrypted files
         run: mkdir -p decrypted-files
 
-      - name: Decrypt all files in directory recursively, preserving subdirectory structure
+      - name: Decrypt Files Recursively
         run: |
-          find data/${{ github.event.inputs.target_branch }} -type f | while read -r file; do
-            # Get the relative path of the file from the target branch directory
-            relative_path="${file#data/${{ github.event.inputs.target_branch }}/}"
-            # Set the output directory in decrypted-files, preserving subdirectory structure
-            output_dir="decrypted-files/${{ github.event.inputs.target_branch }}/$(dirname "$relative_path")"
-            # Create necessary subdirectories in the output path
-            mkdir -p "$output_dir"
-            # Decrypt the file to the corresponding output path
-            gpg --quiet --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
-              --decrypt --output "$output_dir/$(basename "$file").json" "$file"
+          shopt -s globstar
+          for file in data/**/*; do
+            if [ -f "$file" ]; then
+              # Skip the README.md file
+              if [ "$(basename "$file")" = "README.md" ]; then
+                echo "Skipping README.md file: $file"
+                continue
+              fi
+              file_path="$(realpath "$file")"
+              echo "Decrypting: \"$file_path\""
+              # Remove the "data/" prefix to get the relative path
+              relative_path="${file#data/}"
+              echo "Relative path: \"$relative_path\""
+              output_dir="decrypted-files/$(dirname "$relative_path")"
+              mkdir -p "$output_dir"
+              # Attempt to decrypt using the provided passphrase
+              if gpg --quiet --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" \
+                  --decrypt --output "$output_dir/$(basename "$file").json" "$file"; then
+                echo "Decrypted successfully: \"$file_path\""
+              else
+                echo "Skipping non-GPG or failed decryption: \"$file_path\""
+              fi
+            fi
           done
+        shell: bash
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
+      - name: Debug Decrypted Files
+        run: ls -laR decrypted-files/
 
       - name: Set formatted date
         run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
@@ -63,6 +81,6 @@ jobs:
           ls -la
           cp -r decrypted-files/* private-repo/data
           cd private-repo
-          git add *
+          git add .
           git commit -m "Add decrypted file ${{ env.DATE }}"
           git push origin main
