@@ -1,0 +1,75 @@
+name: (REUSABLE_WORKFLOW) Release and Publish Package
+
+on:
+  workflow_call:
+    secrets:
+      NPM_TOKEN:
+        required: true
+
+permissions:
+  contents: write # create releases/tags
+  id-token: write # npm provenance (OIDC)
+
+concurrency:
+  group: release-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (with tags)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Determine tag from package.json
+        id: pkg
+        run: echo "tag=v$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release if missing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.pkg.outputs.tag }}"
+
+          # Does the release already exist?
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists. Skipping."
+            exit 0
+          fi
+
+          echo "Creating release $TAG..."
+          # gh will create the tag if it doesn't exist
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --notes "Release $TAG" \
+            --target "${GITHUB_REF_NAME:-main}" \
+            --latest
+
+  publish:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Publish to npm (with provenance)
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

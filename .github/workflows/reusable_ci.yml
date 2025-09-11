@@ -1,0 +1,97 @@
+# .github/workflows/ci_router.yml
+name: (REUSABLE_WORKFLOW) CI - Lint, Format, Build and Test
+
+on:
+  workflow_call:
+    inputs:
+      node_versions:
+        description: 'JSON array of Node.js versions'
+        required: false
+        type: string
+        default: '[20,22,24]'
+      job_name:
+        description: 'Name of the job to run'
+        required: false
+        type: string
+        default: 'all' # all | lint_ | test
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.job_name == 'all' || startsWith(inputs.job_name, 'lint') }}
+    name: Lint - Node version ${{ matrix.node_version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          node_version: ${{ matrix.node_version }}
+          package_manager: 'npm'
+          install_command: 'ci'
+      - name: Lint
+        run: npm run lint
+
+  format:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.job_name == 'all' || startsWith(inputs.job_name, 'format') }}
+    name: Format - Node version ${{ matrix.node_version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          node_version: ${{ matrix.node_version }}
+          package_manager: 'npm'
+          install_command: 'ci'
+      - name: Format
+        run: npm run format
+
+  build:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.job_name == 'all' || startsWith(inputs.job_name, 'build') }}
+    name: Build - Node version ${{ matrix.node_version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          node_version: ${{ matrix.node_version }}
+          package_manager: 'npm'
+          install_command: 'ci'
+
+      - name: Build
+        run: npm run build
+
+  test:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.job_name == 'all' || startsWith(inputs.job_name, 'test') }}
+    name: Run Tests - Node version ${{ matrix.node_version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          node_version: ${{ matrix.node_version }}
+          package_manager: 'npm'
+          install_command: 'ci'
+
+      - name: Run Tests
+        uses: ./.github/workflows/test.yml
+        with:
+          node_version: ${{ matrix.node_version }}

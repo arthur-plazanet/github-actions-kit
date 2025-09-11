@@ -1,0 +1,26 @@
+name: Install Dependencies (npm)
+description: 'Set up Node.js and install dependencies using npm'
+inputs:
+  node_version:
+    description: 'Node.js version to use'
+    required: false
+    default: '20'
+  working_directory:
+    description: 'Optional subdirectory (e.g. packages/app)'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node_version }}
+        cache: npm
+        cache-dependency-path: ${{ inputs.working_directory != '' && format('{0}/package-lock.json', inputs.working_directory) || 'package-lock.json' }}
+
+    - name: Install dependencies
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: npm ci
