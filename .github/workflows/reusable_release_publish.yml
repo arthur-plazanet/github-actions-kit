@@ -32,26 +32,18 @@ jobs:
         id: pkg
         run: echo "tag=v$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
 
-      - name: Create GitHub Release if missing
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Create GitHub Release from package.json version (if not exists)
         run: |
-          set -euo pipefail
-          TAG="${{ steps.pkg.outputs.tag }}"
-
-          # Does the release already exist?
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "Release $TAG already exists. Skipping."
+          TAG_NAME="v$(jq -r .version package.json)"
+          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Tag $TAG_NAME already exists. Skipping release."
             exit 0
+          else
+            echo "Creating release $TAG_NAME..."
+            gh release create "$TAG_NAME" --title "$TAG_NAME" --notes "Release $TAG_NAME" --target main --latest
           fi
-
-          echo "Creating release $TAG..."
-          # gh will create the tag if it doesn't exist
-          gh release create "$TAG" \
-            --title "$TAG" \
-            --notes "Release $TAG" \
-            --target "${GITHUB_REF_NAME:-main}" \
-            --latest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish:
     needs: release
