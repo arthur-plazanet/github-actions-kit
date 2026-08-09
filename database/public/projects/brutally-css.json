@@ -1,0 +1,22 @@
+{
+  "name": "Brutally-CSS",
+  "description": "<p>Playground to <span style=\"color: rgb(209, 35, 35);\"><strong>explore the Limits of CSS</strong></span> Without JavaScript</p>",
+  "pictures": [],
+  "links": [
+    {
+      "url": "https://brutallycss.com",
+      "label": "brutallycss.com"
+    },
+    {
+      "url": "https://github.com/arthu-pr/brutally-css",
+      "label": "GitHub"
+    }
+  ],
+  "id": "019fe6fd-1b99-705d-bae3-5f7abe281574",
+  "slug": "brutally-css",
+  "createdAt": "2026-08-09T14:46:15.201+00:00",
+  "updatedAt": "2026-08-09T14:46:15.201+00:00",
+  "tags": [
+    "css"
+  ]
+}
