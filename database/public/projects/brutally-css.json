@@ -1,6 +1,8 @@
 {
+  "id": "019fe6fd-1b99-705d-bae3-5f7abe281574",
+  "slug": "brutally-css",
   "name": "Brutally-CSS",
-  "description": "<p>Playground to <span style=\"color: rgb(209, 35, 35);\"><strong>explore the Limits of CSS</strong></span> Without JavaScript</p>",
+  "description": "<h2><span style=\"font-family: Roboto; color: rgb(227, 197, 103);\"><strong>This website</strong></span><span style=\"font-family: Roboto;\"><strong> is a playground to explore </strong></span><span style=\"font-family: Roboto; color: rgb(227, 197, 103);\"><strong>CSS capabilities and limits</strong></span><span style=\"font-family: Roboto;\"><strong> without any JavaScript.</strong></span></h2>",
   "pictures": [],
   "links": [
     {
@@ -12,10 +14,8 @@
       "label": "GitHub"
     }
   ],
-  "id": "019fe6fd-1b99-705d-bae3-5f7abe281574",
-  "slug": "brutally-css",
-  "createdAt": "2026-08-09T14:46:15.201+00:00",
-  "updatedAt": "2026-08-09T14:46:15.201+00:00",
+  "createdAt": "2026-08-09T14:46:15.000+00:00",
+  "updatedAt": "2026-08-09T14:49:08.890+00:00",
   "tags": [
     "css"
   ]
