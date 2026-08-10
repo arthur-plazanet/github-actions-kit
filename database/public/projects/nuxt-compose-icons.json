@@ -1,5 +1,8 @@
 {
+  "id": "019fea1c-3f4b-75dc-a980-af759cc1d5f6",
+  "slug": "nuxt-compose-icons",
   "name": "Nuxt-Compose-Icons",
+  "description": "",
   "pictures": [],
   "links": [
     {
@@ -11,10 +14,8 @@
       "label": "Documentation"
     }
   ],
-  "id": "019fea1c-3f4b-75dc-a980-af759cc1d5f6",
-  "slug": "nuxt-compose-icons",
-  "createdAt": "2026-08-10T05:19:07.596+00:00",
-  "updatedAt": "2026-08-10T05:19:07.596+00:00",
+  "createdAt": "2026-08-10T05:19:07.000+00:00",
+  "updatedAt": "2026-08-10T05:19:07.000+00:00",
   "tags": [
     "design-system",
     "icons",
